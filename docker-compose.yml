@@ -14,7 +14,7 @@ services:
     volumes:
       - ./volume/database:/data/db
   gestor-clientes:
-    build: ./gestor-de-clientes
+    image: registry.gitlab.com/tareas-arquitectura-de-software-curso/microservicios/gestor-de-clientes:latest
     depends_on:
       - database
     ports:
@@ -24,7 +24,7 @@ services:
     networks:
       microservices:
   notificador:
-    build: ./notificador
+    image: registry.gitlab.com/tareas-arquitectura-de-software-curso/microservicios/notificador:latest
     ports:
       - "0.0.0.0:8001:8001"
     expose:
@@ -32,7 +32,7 @@ services:
     networks:
       microservices:
   reporteador:
-    build: ./reporteador
+    image: registry.gitlab.com/tareas-arquitectura-de-software-curso/microservicios/reporteador:latest
     ports:
       - "0.0.0.0:8002:8002"
     expose:
@@ -40,7 +40,7 @@ services:
     networks:
       microservices:
   pagos:
-    build: ./pagos
+    image: registry.gitlab.com/tareas-arquitectura-de-software-curso/microservicios/pagos:latest
     ports:
       - "0.0.0.0:8003:8003"
     expose:
@@ -50,7 +50,7 @@ services:
     volumes:
       - ./volume/simulador:/data
   simulador:
-    build: ./simulador
+    image: registry.gitlab.com/tareas-arquitectura-de-software-curso/microservicios/simulador:latest
     networks:
       microservices:
     volumes:
@@ -75,7 +75,7 @@ services:
     ports:
       - 6379:6379
   cliente:
-    build: ./cliente
+    image: registry.gitlab.com/tareas-arquitectura-de-software-curso/microservicios/cliente:latest
     networks:
       microservices:
     ports:
