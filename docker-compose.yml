@@ -24,7 +24,7 @@ services:
     networks:
       microservices:
   notificador:
-    image: registry.gitlab.com/tareas-arquitectura-de-software-curso/microservicios/notificador:latest
+    build: ./notificador
     ports:
       - "0.0.0.0:8001:8001"
     expose:
@@ -40,7 +40,7 @@ services:
     networks:
       microservices:
   pagos:
-    image: registry.gitlab.com/tareas-arquitectura-de-software-curso/microservicios/pagos:latest
+    build: ./pagos
     ports:
       - "0.0.0.0:8003:8003"
     expose:
