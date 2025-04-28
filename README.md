@@ -54,11 +54,7 @@ Para este microservicio no hay que realizar alguna configuración
 
 ### Cliente
 
-Accede al archivo `cliente/.env` y actualiza el valor de la variable `GATEWAY_HOST`:
-
-```bash
-GATEWAY_HOST=tyk-gateway
-```
+Para este microservicio no hay que realizar alguna configuración
 
 ### Notificador
 
