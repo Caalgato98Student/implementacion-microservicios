@@ -31,6 +31,8 @@ services:
       - 8001
     networks:
       microservices:
+    volumes:
+      - ./notificador:/notifier
   reporteador:
     image: registry.gitlab.com/tareas-arquitectura-de-software-curso/microservicios/reporteador:latest
     ports:
@@ -49,6 +51,7 @@ services:
       microservices:
     volumes:
       - ./volume/simulador:/data
+      - ./pagos:/go/src/pagos
   simulador:
     image: registry.gitlab.com/tareas-arquitectura-de-software-curso/microservicios/simulador:latest
     networks:
