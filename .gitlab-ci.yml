@@ -1,17 +1,35 @@
+default:
+  image: docker:24.0.5
+  services:
+    - docker:24.0.5-dind
+  before_script:
+    - docker info
+
 stages:
   - build
   - test
   
-build:
+build_notificador:
   stage: build
   before_script:
     - echo $CI_JOB_TOKEN | docker login $CI_REGISTRY -u $CI_REGISTRY_USER --password-stdin
     - git submodule update --init --recursive
   script:
-    - docker build --tag ${CI_REGISTRY_IMAGE}-notificador:latest --tag ${CI_REGISTRY_IMAGE}-notificador:$CI_COMMIT_SHORT_SHA ./notificador
-    - docker push ${CI_REGISTRY_IMAGE}-notificador:$CI_COMMIT_SHORT_SHA
-    - docker push ${CI_REGISTRY_IMAGE}-notificador:latest
-    - docker build --tag ${CI_REGISTRY_IMAGE}-pagos:latest --tag ${CI_REGISTRY_IMAGE}-pagos:$CI_COMMIT_SHORT_SHA ./pagos
-    - docker push ${CI_REGISTRY_IMAGE}-pagos:$CI_COMMIT_SHORT_SHA
-    - docker push ${CI_REGISTRY_IMAGE}-pagos:latest
+    - docker buildx create --name notifier --driver=docker-container
+    - docker buildx build --tag ${CI_REGISTRY_IMAGE}-notificador:latest --platform linux/arm64,linux/amd64 --builder notifier --push ./notificador
+build_pagos:
+  stage: build
+  before_script:
+    - echo $CI_JOB_TOKEN | docker login $CI_REGISTRY -u $CI_REGISTRY_USER --password-stdin
+    - git submodule update --init --recursive
+  script:
+    - docker buildx create --name payments --driver=docker-container
+    - docker buildx build --tag ${CI_REGISTRY_IMAGE}-pagos:latest --platform linux/arm64,linux/amd64 --builder payments --push ./pagos
 
+test_notificador:
+  stage: test
+  before_script:
+    - echo $CI_JOB_TOKEN | docker login $CI_REGISTRY -u $CI_REGISTRY_USER --password-stdin
+  script:
+    - docker run ${CI_REGISTRY_IMAGE}-notificador:latest sh -c "python -m coverage run -m unittest discover; python -m coverage report -m"
+  coverage: '/(?i)total.*? (100(?:\.0+)?\%|[1-9]?\d(?:\.\d+)?\%)$/'
