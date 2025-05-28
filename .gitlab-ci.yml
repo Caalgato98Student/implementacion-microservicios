@@ -13,6 +13,7 @@ build_notificador:
   stage: build
   before_script:
     - echo $CI_JOB_TOKEN | docker login $CI_REGISTRY -u $CI_REGISTRY_USER --password-stdin
+    - apk add --no-cache git
     - git submodule update --init --recursive
   script:
     - docker buildx create --name notifier --driver=docker-container
@@ -21,6 +22,7 @@ build_pagos:
   stage: build
   before_script:
     - echo $CI_JOB_TOKEN | docker login $CI_REGISTRY -u $CI_REGISTRY_USER --password-stdin
+    - apk add --no-cache git
     - git submodule update --init --recursive
   script:
     - docker buildx create --name payments --driver=docker-container
