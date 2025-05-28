@@ -26,13 +26,6 @@ test_pagos:
     - go mod tidy
     - go test ./... -v -coverprofile=coverage.out
     - go tool cover -func=coverage.out
-  artifacts:
-    paths:
-      - coverage.out
-    reports:
-      coverage_report:
-        coverage_format: go
-        path: coverage.out
 
 build_notificador:
   stage: build
