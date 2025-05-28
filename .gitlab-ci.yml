@@ -29,6 +29,8 @@ test_pagos:
     - git submodule update --init --recursive 
   script:
     - cd pagos
+    - go env -w GO111MODULE=off
+    - go get -d
     - go get "github.com/stretchr/testify/assert"
     - go test ./... -v -coverprofile=coverage.out
     - go tool cover -func=coverage.out
