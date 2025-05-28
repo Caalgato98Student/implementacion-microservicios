@@ -1,0 +1,17 @@
+stages:
+  - build
+  - test
+  
+build:
+  stage: build
+  before_script:
+    - echo $CI_JOB_TOKEN | docker login $CI_REGISTRY -u $CI_REGISTRY_USER --password-stdin
+    - git submodule update --init --recursive
+  script:
+    - docker build --tag ${CI_REGISTRY_IMAGE}-notificador:latest --tag ${CI_REGISTRY_IMAGE}-notificador:$CI_COMMIT_SHORT_SHA ./notificador
+    - docker push ${CI_REGISTRY_IMAGE}-notificador:$CI_COMMIT_SHORT_SHA
+    - docker push ${CI_REGISTRY_IMAGE}-notificador:latest
+    - docker build --tag ${CI_REGISTRY_IMAGE}-pagos:latest --tag ${CI_REGISTRY_IMAGE}-pagos:$CI_COMMIT_SHORT_SHA ./pagos
+    - docker push ${CI_REGISTRY_IMAGE}-pagos:$CI_COMMIT_SHORT_SHA
+    - docker push ${CI_REGISTRY_IMAGE}-pagos:latest
+
