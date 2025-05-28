@@ -6,9 +6,34 @@ default:
     - docker info
 
 stages:
-  - build
   - test
-  
+  - build
+
+test_notificador:
+  stage: test
+  image: python:3.8-alpine
+  script:
+    - pip install -r requirements.txt
+    - pip install coverage
+    - python -m coverage run -m unittest discover
+    - python -m coverage report -m
+  coverage: '/(?i)total.*? (100(?:\.0+)?\%|[1-9]?\d(?:\.\d+)?\%)$/'
+
+test_pagos:
+  stage: test
+  image: golang:1.18
+  script:
+    - go mod tidy
+    - go test ./... -v -coverprofile=coverage.out
+    - go tool cover -func=coverage.out
+  artifacts:
+    paths:
+      - coverage.out
+    reports:
+      coverage_report:
+        coverage_format: go
+        path: coverage.out
+
 build_notificador:
   stage: build
   before_script:
@@ -18,6 +43,7 @@ build_notificador:
   script:
     - docker buildx create --name notifier --driver=docker-container
     - docker buildx build --tag $CI_REGISTRY_IMAGE:notificador --platform linux/arm64,linux/amd64 --builder notifier --push ./notificador
+
 build_pagos:
   stage: build
   before_script:
@@ -27,11 +53,3 @@ build_pagos:
   script:
     - docker buildx create --name payments --driver=docker-container
     - docker buildx build --tag $CI_REGISTRY_IMAGE:pagos --platform linux/arm64,linux/amd64 --builder payments --push ./pagos
-
-test_notificador:
-  stage: test
-  before_script:
-    - echo $CI_JOB_TOKEN | docker login $CI_REGISTRY -u $CI_REGISTRY_USER --password-stdin
-  script:
-    - docker run $CI_REGISTRY_IMAGE:notificador sh -c "pip install coverage; python -m coverage run -m unittest discover; python -m coverage report -m"
-  coverage: '/(?i)total.*? (100(?:\.0+)?\%|[1-9]?\d(?:\.\d+)?\%)$/'
